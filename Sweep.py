@@ -41,29 +41,43 @@ Ybus = np.array([[Y['1-2'], -Y['1-2'], 0, 0, 0],
 
 # Log of voltages
 Vlog = [np.array([bus['1']['V'], bus['2']['V'], bus['3']['V'], bus['4']['V'], bus['5']['V']])]
-print(Vlog)
+# print(Vlog)
 
-# Backward
-for key in sorted(line.keys(), reverse=True):
+error = 1
+counter = 0
 
-    # Calculate current of each bus
-    bus[key[-1]]['I'] = np.conjugate(bus[key[-1]]['P'] + 1j*bus[key[-1]]['Q'])/np.conjugate(bus[key[-1]]['V'])
+while error > tolerance:
 
-    # Calculate current on each line
-    try:
-        line[key]['I'] = bus[key[-1]]['I'] + line[key[-1] + '-' + str(int(key[-1]) + 1)]['I']
-    except KeyError:
-        line[key]['I'] = bus[key[-1]]['I']
+    # Backward
+    for key in sorted(line.keys(), reverse=True):
 
-# Forward
-# bus['1']['V'] = (1 + 1j*0)
+        # Calculate current of each bus
+        bus[key[-1]]['I'] = np.conjugate(bus[key[-1]]['P'] + 1j*bus[key[-1]]['Q'])/np.conjugate(bus[key[-1]]['V'])
 
-for key in sorted(line.keys()):
-    bus[key[-1]]['V'] = bus[key[0]]['V'] - line[key]['I']/Y[key]
+        # Calculate current on each line
+        try:
+            line[key]['I'] = bus[key[-1]]['I'] + line[key[-1] + '-' + str(int(key[-1]) + 1)]['I']
+        except KeyError:
+            line[key]['I'] = bus[key[-1]]['I']
 
-for key in bus.keys():
-    print(key, bus[key])
+    # Forward
+    # bus['1']['V'] = (1 + 1j*0)
 
-Vlog.append(np.array([bus['1']['V'], bus['2']['V'], bus['3']['V'], bus['4']['V'], bus['5']['V']]))
+    for key in sorted(line.keys()):
+        bus[key[-1]]['V'] = bus[key[0]]['V'] - line[key]['I']/Y[key]
 
-print(abs(Vlog[-1]) - abs(Vlog[-2]))
+    # for key in bus.keys():
+    #     print(key, bus[key])
+    # Save voltages on log
+    Vlog.append(np.array([bus['1']['V'], bus['2']['V'], bus['3']['V'], bus['4']['V'], bus['5']['V']]))
+    # print(abs(Vlog[-2]) - abs(Vlog[-1]))
+
+    error = (max(np.absolute(Vlog[-2]) - np.absolute(Vlog[-1])))
+
+    counter += 1
+
+    print("Iteração #%d" % counter)
+    print("Erro: %6f" % error)
+    for key in bus.keys():
+        print("Barra #%d: %f < %f" % (int(key), np.absolute(bus[key]['V']), np.angle(bus[key]['V'])))
+    print(20*"-" + "\n")
