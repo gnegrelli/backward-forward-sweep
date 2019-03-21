@@ -74,5 +74,5 @@ while error > tolerance:
     print("Iteração #%d" % counter)
     print("Erro: %6f" % error)
     for key in bus.keys():
-        print("Barra #%d: %f < %f" % (int(key), np.absolute(bus[key]['V']), np.angle(bus[key]['V'])))
+        print("Barra #%d: %f < %f" % (int(key), np.absolute(bus[key]['V']), np.angle(bus[key]['V'], deg=True)))
     print(20*"-" + "\n")
