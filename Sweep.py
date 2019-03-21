@@ -6,6 +6,8 @@ Vb = 12.66  # Base Voltage in kV
 
 Zb = ((Vb*1000)**2)/(Sb*1000)  # Base impedance in ohms
 
+tolerance = 0.00001
+
 # Bus states
 bus = {}
 
