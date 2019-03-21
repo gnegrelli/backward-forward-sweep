@@ -38,3 +38,11 @@ Ybus = np.array([[Y['1-2'], -Y['1-2'], 0, 0, 0],
                  [0, 0, -Y['3-4'], Y['3-4'] + Y['4-5'], -Y['4-5']],
                  [0, 0, 0, -Y['4-5'], Y['4-5']]])
 
+# Backward
+for key in sorted(line.keys(), reverse=True):
+    bus[key[-1]]['I'] = np.conjugate(bus[key[-1]]['P'] + 1j*bus[key[-1]]['Q'])/np.conjugate(bus[key[-1]]['V']*np.exp(1j*bus[key[-1]]['theta']))
+
+    # line[key]['I'] =
+
+
+
