@@ -11,10 +11,11 @@ tolerance = 0.00001
 # Bus states
 bus = {}
 
-bus['2'] = {'P': 1000/Sb, 'Q': 600/Sb, 'V': 1, 'theta': 0, 'I': 0}
-bus['3'] = {'P': 900/Sb, 'Q': 400/Sb, 'V': 1, 'theta': 0, 'I': 0}
-bus['4'] = {'P': 1200/Sb, 'Q': 800/Sb, 'V': 1, 'theta': 0, 'I': 0}
-bus['5'] = {'P': 800/Sb, 'Q': 600/Sb, 'V': 1, 'theta': 0, 'I': 0}
+bus['1'] = {'P': 0/Sb, 'Q': 0/Sb, 'V': 1 + 1j*0, 'I': 0}
+bus['2'] = {'P': 1000/Sb, 'Q': 600/Sb, 'V': 1 + 1j*0, 'I': 0}
+bus['3'] = {'P': 900/Sb, 'Q': 400/Sb, 'V': 1 + 1j*0, 'I': 0}
+bus['4'] = {'P': 1200/Sb, 'Q': 800/Sb, 'V': 1 + 1j*0, 'I': 0}
+bus['5'] = {'P': 800/Sb, 'Q': 600/Sb, 'V': 1 + 1j*0, 'I': 0}
 
 # Line impedances
 line = {}
@@ -40,9 +41,30 @@ Ybus = np.array([[Y['1-2'], -Y['1-2'], 0, 0, 0],
 
 # Backward
 for key in sorted(line.keys(), reverse=True):
-    bus[key[-1]]['I'] = np.conjugate(bus[key[-1]]['P'] + 1j*bus[key[-1]]['Q'])/np.conjugate(bus[key[-1]]['V']*np.exp(1j*bus[key[-1]]['theta']))
 
-    # line[key]['I'] =
+    # Calculate current of each bus
+    bus[key[-1]]['I'] = np.conjugate(bus[key[-1]]['P'] + 1j*bus[key[-1]]['Q'])/np.conjugate(bus[key[-1]]['V'])
+    # print(bus[key[-1]]['I'])
+
+    # Calculate current on each line
+    try:
+        line[key]['I'] = bus[key[-1]]['I'] + line[key[-1] + '-' + str(int(key[-1]) + 1)]['I']
+    except KeyError:
+        line[key]['I'] = bus[key[-1]]['I']
+
+    # Recalculate voltage on each bus
+    # bus[key[0]]['V'] = bus[key[-1]]['V'] + line[key]['I']/Y[key]
 
 
+# for key in line.keys():
+#     print(key, line[key])
 
+# Forward
+bus['1']['V'] = (1 + 1j*0)
+
+for key in sorted(line.keys()):
+    print(key)
+    bus[key[-1]]['V'] = bus[key[0]]['V'] - line[key]['I']/Y[key]
+
+for key in bus.keys():
+    print(key, bus[key])
