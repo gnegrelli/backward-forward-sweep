@@ -39,12 +39,15 @@ Ybus = np.array([[Y['1-2'], -Y['1-2'], 0, 0, 0],
                  [0, 0, -Y['3-4'], Y['3-4'] + Y['4-5'], -Y['4-5']],
                  [0, 0, 0, -Y['4-5'], Y['4-5']]])
 
+# Log of voltages
+Vlog = [np.array([bus['1']['V'], bus['2']['V'], bus['3']['V'], bus['4']['V'], bus['5']['V']])]
+print(Vlog)
+
 # Backward
 for key in sorted(line.keys(), reverse=True):
 
     # Calculate current of each bus
     bus[key[-1]]['I'] = np.conjugate(bus[key[-1]]['P'] + 1j*bus[key[-1]]['Q'])/np.conjugate(bus[key[-1]]['V'])
-    # print(bus[key[-1]]['I'])
 
     # Calculate current on each line
     try:
@@ -52,19 +55,15 @@ for key in sorted(line.keys(), reverse=True):
     except KeyError:
         line[key]['I'] = bus[key[-1]]['I']
 
-    # Recalculate voltage on each bus
-    # bus[key[0]]['V'] = bus[key[-1]]['V'] + line[key]['I']/Y[key]
-
-
-# for key in line.keys():
-#     print(key, line[key])
-
 # Forward
-bus['1']['V'] = (1 + 1j*0)
+# bus['1']['V'] = (1 + 1j*0)
 
 for key in sorted(line.keys()):
-    print(key)
     bus[key[-1]]['V'] = bus[key[0]]['V'] - line[key]['I']/Y[key]
 
 for key in bus.keys():
     print(key, bus[key])
+
+Vlog.append(np.array([bus['1']['V'], bus['2']['V'], bus['3']['V'], bus['4']['V'], bus['5']['V']]))
+
+print(abs(Vlog[-1]) - abs(Vlog[-2]))
