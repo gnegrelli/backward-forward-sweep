@@ -45,6 +45,9 @@ tolerance = 0.00001
 error = 1
 counter = 0
 
+# Create file
+f = open("results.txt", "w+")
+
 while error > tolerance:
 
     # Backward
@@ -74,5 +77,12 @@ while error > tolerance:
     print("Iteração #%d" % counter)
     print("Erro: %6f" % error)
     for key in bus.keys():
-        print("Barra #%d: %f < %f° pu" % (int(key), np.absolute(bus[key]['V']), np.angle(bus[key]['V'], deg=True)))
+        print("Barra #%d: V = %f < %f° pu" % (int(key), np.absolute(bus[key]['V']), np.angle(bus[key]['V'], deg=True)))
     print(20*"-" + "\n")
+
+    # Write in results file
+    f.write("\nIteração #%d" % counter)
+    f.write("\nErro: %6f" % error)
+    for key in bus.keys():
+        f.write("\nBarra #%d: V = %f < %f° pu" % (int(key), np.absolute(bus[key]['V']), np.angle(bus[key]['V'], deg=True)))
+    f.write("\n" + 20*"-" + "\n")
