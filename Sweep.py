@@ -6,8 +6,6 @@ Vb = 12.66  # Base Voltage in kV
 
 Zb = ((Vb*1000)**2)/(Sb*1000)  # Base impedance in ohms
 
-tolerance = 0.00001
-
 # Bus states
 bus = {}
 
@@ -41,8 +39,9 @@ Ybus = np.array([[Y['1-2'], -Y['1-2'], 0, 0, 0],
 
 # Log of voltages
 Vlog = [np.array([bus['1']['V'], bus['2']['V'], bus['3']['V'], bus['4']['V'], bus['5']['V']])]
-# print(Vlog)
 
+# Initializes global variables
+tolerance = 0.00001
 error = 1
 counter = 0
 
@@ -61,21 +60,17 @@ while error > tolerance:
             line[key]['I'] = bus[key[-1]]['I']
 
     # Forward
-    # bus['1']['V'] = (1 + 1j*0)
-
     for key in sorted(line.keys()):
         bus[key[-1]]['V'] = bus[key[0]]['V'] - line[key]['I']/Y[key]
 
-    # for key in bus.keys():
-    #     print(key, bus[key])
-    # Save voltages on log
+    # Save voltages obtained on each iteration on log
     Vlog.append(np.array([bus['1']['V'], bus['2']['V'], bus['3']['V'], bus['4']['V'], bus['5']['V']]))
-    # print(abs(Vlog[-2]) - abs(Vlog[-1]))
 
+    # Calculate error for this iteration and add counter
     error = (max(np.absolute(Vlog[-2]) - np.absolute(Vlog[-1])))
-
     counter += 1
 
+    # Print data for this iteration
     print("Iteração #%d" % counter)
     print("Erro: %6f" % error)
     for key in bus.keys():
