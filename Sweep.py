@@ -78,6 +78,7 @@ while error > tolerance:
     print("Erro: %6f" % error)
     for key in bus.keys():
         print("Barra #%d: V = %f < %f° pu" % (int(key), np.absolute(bus[key]['V']), np.angle(bus[key]['V'], deg=True)))
+
     print(20*"-" + "\n")
 
     # Write in results file
